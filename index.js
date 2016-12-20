@@ -14,6 +14,9 @@
 
 'use strict'
 
+var assert = require('assert')
+var _ = require('lodash')
+
 
 /**
  * lightweight dns server for fuge
@@ -27,7 +30,39 @@ module.exports = function (opts) {
   var server = require('./server')(opts, store)
 
 
+  /**
+   * add records from fuge config file, uses a block of JSON of the fllowing format
+   *{
+   *  "A": {
+   *    "frontend.testns.svc.cluster.local": {
+   *      "address": "127.0.0.1"
+   *    }...
+   *  }...
+   *  "SRV": {
+   *    "_http._tcp.frontend.testns.svc.cluster.local": {
+   *      "address": "127.0.0.1",
+   *      "port": "3000"
+   *  }...
+   * }
+   */
+  function addZone (zone) {
+    assert(zone.A && zone.SRV)
+
+    _.each(_.keys(zone), function (type) {
+      _.each(_.keys(zone[type]), function (record) {
+        if (type === 'A') {
+          store.addARecord(record, zone[type][record].address)
+        }
+        if (type === 'SRV') {
+          store.addSRVRecord(record, zone[type][record].address, zone[type][record].port)
+        }
+      })
+    })
+  }
+
+
   return {
+    addZone: addZone,
     addARecord: store.addARecord,
     addSRVRecord: store.addSRVRecord,
     removeAllRecords: store.removeAllRecords,
