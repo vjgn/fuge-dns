@@ -15,7 +15,6 @@
 'use strict'
 
 var assert = require('assert')
-var _ = require('lodash')
 
 
 /**
@@ -44,12 +43,15 @@ module.exports = function (opts) {
    *      "port": "3000"
    *  }...
    * }
+   *
+    _.each(_.keys(zone), function (type) {
+      _.each(_.keys(zone[type]), function (record) {
    */
   function addZone (zone) {
     assert(zone.A && zone.SRV)
 
-    _.each(_.keys(zone), function (type) {
-      _.each(_.keys(zone[type]), function (record) {
+    Object.keys(zone).forEach(function (type) {
+      Object.keys(zone[type]).forEach(function (record) {
         if (type === 'A') {
           store.addARecord(record, zone[type][record].address)
         }
