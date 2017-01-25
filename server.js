@@ -14,7 +14,7 @@
 
 'use strict'
 
-var named = require('node-named')
+var named = require('fuge-named')
 
 
 /**
@@ -41,8 +41,8 @@ module.exports = function (opts, store) {
 
 
 
-  function stop () {
-    server.close()
+  function stop (cb) {
+    server.close(cb)
   }
 
 

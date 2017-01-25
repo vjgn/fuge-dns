@@ -43,9 +43,6 @@ module.exports = function (opts) {
    *      "port": "3000"
    *  }...
    * }
-   *
-    _.each(_.keys(zone), function (type) {
-      _.each(_.keys(zone[type]), function (record) {
    */
   function addZone (zone) {
     assert(zone.A && zone.SRV)
@@ -56,7 +53,7 @@ module.exports = function (opts) {
           store.addARecord(record, zone[type][record].address)
         }
         if (type === 'SRV') {
-          store.addSRVRecord(record, zone[type][record].address, zone[type][record].port)
+          store.addSRVRecord(record, zone[type][record].cname, zone[type][record].port)
         }
       })
     })
@@ -67,6 +64,7 @@ module.exports = function (opts) {
     addZone: addZone,
     addARecord: store.addARecord,
     addSRVRecord: store.addSRVRecord,
+    listRecords: store.listRecords,
     removeAllRecords: store.removeAllRecords,
     start: server.start,
     stop: server.stop

@@ -14,7 +14,7 @@
 
 'use strict'
 
-var named = require('node-named')
+var named = require('fuge-named')
 
 
 /**
@@ -56,9 +56,23 @@ module.exports = function (opts) {
 
 
 
+  function listRecords () {
+    var result = []
+
+    Object.keys(records).forEach(function (type) {
+      Object.keys(records[type]).forEach(function (record) {
+        result.push({domain: record, record: records[type][record]})
+      })
+    })
+    return result
+  }
+
+
+
   return {
     addARecord: addARecord,
     addSRVRecord: addSRVRecord,
+    listRecords: listRecords,
     removeAllRecords: removeAllRecords,
     lookupRecord: lookupRecord
   }

@@ -1,6 +1,7 @@
 {
   "license": "MIT",
   "name": "fuge-dns",
+  "version": "0.2.0",
   "author": "Peter Elger (https://github.com/pelger)",
   "contributors": [],
   "keywords": [
@@ -44,6 +45,6 @@
     "check"
   ],
   "dependencies": {
-    "node-named": "0.0.1"
+    "fuge-named": "0.0.1"
   }
 }
