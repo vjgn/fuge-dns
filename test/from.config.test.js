@@ -30,14 +30,17 @@ var configZone = {
   'SRV': {
     '_main._tcp.frontend.testns.svc.cluster.local': {
       'address': '127.0.0.1',
+      'cname': 'frontend.testns.svc.cluster.local',
       'port': '3000'
     },
     '_tcp._tcp.frontend.testns.svc.cluster.local': {
       'address': '127.0.0.1',
+      'cname': 'frontend.testns.svc.cluster.local',
       'port': '3001'
     },
     '_http._tcp.service.testns.svc.cluster.local': {
       'address': '127.0.0.1',
+      'cname': 'service.testns.svc.cluster.local',
       'port': '20000'
     }
   }
@@ -59,12 +62,21 @@ test('A and SRV query from config spinup', function (t) {
         dns.stop()
         dns.removeAllRecords()
         t.equal(err, null, 'check err is null')
-        t.equal(res.answers[0].data.target, '127.0.0.1', 'check SRV target')
+        t.equal(res.answers[0].data.target, 'service.testns.svc.cluster.local', 'check SRV target')
         t.equal(res.answers[0].data.port, 20000, 'check SRV port')
         t.equal(res.answers[0].data.weight, 10, 'check SRV weight')
         t.equal(res.answers[0].data.priority, 0, 'check SRV priority')
       })
     })
   })
+})
+
+
+test('list records', function (t) {
+  t.plan(1)
+
+  dns.addZone(configZone)
+  var records = dns.listRecords()
+  t.equal(records.length, 5, 'check correct number of records in zone')
 })
 
