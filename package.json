@@ -1,16 +1,16 @@
 {
   "license": "MIT",
   "name": "fuge-dns",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "author": "Peter Elger (https://github.com/pelger)",
   "contributors": [],
   "keywords": [
     "microservices",
-    "manager",
     "fuge",
     "configuration",
     "discovery",
-    "dns"
+    "dns",
+    "kubernetes"
   ],
   "repository": {
     "type": "git",
