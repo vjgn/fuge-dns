@@ -53,9 +53,13 @@ module.exports = function (opts) {
           store.addARecord(record, zone[type][record].address)
         }
         if (type === 'SRV') {
-          zone[type][record].forEach(r => {
-            store.addSRVRecord(record, r.cname, r.port)
-          })
+          if(zone[type][record].length) {
+            zone[type][record].forEach(r => {
+              store.addSRVRecord(record, r.cname, r.port)
+            })
+          } else {          
+            store.addSRVRecord(record, zone[type][record].cname, zone[type][record].port)
+          }          
         }
       })
     })
