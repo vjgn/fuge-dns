@@ -31,7 +31,15 @@ module.exports = function (opts) {
 
 
   function addSRVRecord (domain, address, port, options) {
-    records.SRV[domain] = new named.SRVRecord(address, port, options)
+    const srvRecords = Object.keys(records.SRV).find(k => k === domain)
+    if (srvRecords) {
+      if (!records.SRV[srvRecords].find(r => r.port === port && r.address === address)) {
+        records.SRV[domain].push(new named.SRVRecord(address, port, options))
+      }
+    } else {
+      // records.SRV.push[domain] = new named.SRVRecord(address, port, options)
+      records.SRV[domain] = [new named.SRVRecord(address, port, options)]
+    }
   }
 
 

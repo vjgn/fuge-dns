@@ -16,6 +16,7 @@ mochahelper.js
 .idea/
 .settings/
 .nyc_output/
+.vscode
 dist
 .tmp
 .sass-cache

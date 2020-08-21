@@ -31,7 +31,13 @@ module.exports = function (opts, store) {
         var record = store.lookupRecord(query.type(), query.name())
 
         if (record) {
-          query.addAnswer(query.name(), record)
+          if (record.length) {
+            for (let ans of record) {
+              query.addAnswer(query.name(), ans)
+            }
+          } else {
+            query.addAnswer(query.name(), record)
+          }
         }
         server.send(query)
       })

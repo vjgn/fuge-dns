@@ -12,61 +12,56 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-'use strict'
+// 'use strict'
 
-var test = require('tap').test
+var expect = require('chai').expect
 var dnsSocket = require('dns-socket')
-var dns = require('../index')({host: '127.0.0.1', port: 53053, ttl: 60})
+var dns = require('../index')({host: '127.0.0.1', port: 53054, ttl: 60})
 
+describe('A and SRV query', () => {
+  before((done) => {
+    dns.addARecord('test.local', '1.2.3.4')
+    dns.addSRVRecord('_http.test.local', '1.2.3.4', 8080)
+    dns.start(done)
+  })
 
-test('A and SRV query', function (t) {
-  t.plan(7)
+  after(() => {
+    dns.stop()
+    dns.removeAllRecords()
+  })
 
-  dns.addARecord('test.local', '1.2.3.4')
-  dns.addSRVRecord('_http.test.local', '1.2.3.4', 8080)
-  dns.start(function () {
+  it('success A and SRV query', () => {
     var client = dnsSocket()
 
-    client.query({questions: [{type: 'A', name: 'test.local'}]}, 53053, '127.0.0.1', function (err, res) {
-      t.equal(err, null, 'check err is null')
-      t.equal(res.answers[0].data, '1.2.3.4', 'check A record address')
-      client.query({questions: [{type: 'SRV', name: '_http.test.local'}]}, 53053, '127.0.0.1', function (err, res) {
+    client.query({questions: [{type: 'A', name: 'test.local'}]}, 53054, '127.0.0.1', function (err, res) {
+      expect(err).to.be.null
+      expect(res.answers[0].data).to.equal('1.2.3.4', 'check A record address')
+      client.query({questions: [{type: 'SRV', name: '_http.test.local'}]}, 53054, '127.0.0.1', function (err, res) {
         client.destroy()
-        dns.stop()
-        dns.removeAllRecords()
-        t.equal(err, null, 'check err is null')
-        t.equal(res.answers[0].data.target, '1.2.3.4', 'check SRV target')
-        t.equal(res.answers[0].data.port, 8080, 'check SRV port')
-        t.equal(res.answers[0].data.weight, 10, 'check SRV weight')
-        t.equal(res.answers[0].data.priority, 0, 'check SRV priority')
+        expect(err).to.be.null
+        expect(res.answers[0].data.target).equal('1.2.3.4', 'check SRV target')
+        expect(res.answers[0].data.port).equal(8080, 'check SRV port')
+        expect(res.answers[0].data.weight).equal(10, 'check SRV weight')
+        expect(res.answers[0].data.priority).equal(0, 'check SRV priority')
       })
     })
   })
-})
 
 
-test('fail A query', function (t) {
-  t.plan(2)
-
-  dns.addARecord('test.local', '1.2.3.4')
-  dns.addSRVRecord('_http.test.local', '1.2.3.4', 8080)
-  dns.start(function () {
+  it('fail A query', () => {
     var client = dnsSocket()
 
-    client.query({questions: [{type: 'A', name: 'wibble.fish'}]}, 53053, '127.0.0.1', function (err, res) {
-      t.equal(err, null, 'check err is null')
-      t.equal(res.answers.length, 0, 'check no answer')
+    client.query({questions: [{type: 'A', name: 'wibble.fish'}]}, 53054, '127.0.0.1', function (err, res) {
+      expect(err).to.be.null
+      expect(res.answers.length).equal(0, 'check no answer')
       client.destroy()
-      dns.stop()
-      dns.removeAllRecords()
     })
   })
+
+
+  // test('no opts', function (t) {
+  //   t.plan(1)
+  //   require('../index')()
+  //   t.pass()
+  // })
 })
-
-
-test('no opts', function (t) {
-  t.plan(1)
-  require('../index')()
-  t.pass()
-})
-
